@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Markdown Rendering Engine Context Library Dependency -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   :root{
     --bg: #F5F6F3;
@@ -122,14 +124,14 @@
   .course-card{
     background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
     padding:22px 20px; cursor:pointer; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
-    display:flex; flex-direction:column; text-align:left;
+    display:flex; flex-direction:column; text-align:left; background: var(--surface); width: 100%; height: 100%;
   }
   .course-card:hover{ border-color:var(--brand); transform:translateY(-3px); box-shadow:var(--shadow); }
   .course-card.active{ border-color:var(--brand); background:var(--brand-dim); box-shadow:var(--shadow); }
   .course-card .track-tag{ font-family:'JetBrains Mono'; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--brand); margin-bottom:10px; }
   .course-card h3{ font-size:1.02rem; margin:0 0 8px; line-height:1.25; }
   .course-card p.focus{ font-size:0.83rem; color:var(--ink-soft); margin:0 0 14px; flex-grow:1; }
-  .course-card .meta{ display:flex; gap:10px; font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--ink-faint); }
+  .course-card .meta{ display:flex; gap:10px; font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--ink-faint); margin-top: auto; }
   .course-card .meta span{ background:var(--surface-raised); padding:3px 8px; border-radius:5px; }
 
   /* ---------- detail panel ---------- */
@@ -146,6 +148,14 @@
   .detail-facts div{ font-size:0.83rem; }
   .detail-facts b{ display:block; font-family:'Space Grotesk'; font-size:1rem; }
   .detail-facts span{ color:var(--ink-faint); font-size:0.74rem; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* Unified Markdown Typographical Rules for Dynamic Syllabi */
+  .markdown-content h1 { font-size: 1.7rem; margin: 0 0 10px; color: var(--ink); }
+  .markdown-content h2 { font-size: 1.35rem; margin: 32px 0 14px; border-bottom: 1px solid var(--line); padding-bottom: 6px; color: var(--ink); }
+  .markdown-content h3 { font-size: 1.1rem; margin: 22px 0 10px; color: var(--brand); }
+  .markdown-content p { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 14px; }
+  .markdown-content ul { margin: 0 0 18px; padding-left: 18px; color: var(--ink-soft); }
+  .markdown-content li { margin-bottom: 5px; font-size: 0.88rem; }
 
   /* module timeline */
   .timeline{ display:grid; grid-template-columns:74px 1fr; gap:0; }
@@ -194,6 +204,21 @@
   .assess-item{ flex:1; min-width:140px; background:var(--surface-raised); border-radius:9px; padding:12px 14px; }
   .assess-item b{ font-family:'Space Grotesk'; font-size:1.15rem; display:block; }
   .assess-item span{ font-size:0.76rem; color:var(--ink-faint); }
+
+  /* ---------- Integrated Formspree Layout Styles ---------- */
+  .enquiry-container {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 30px; margin-top: 24px; box-shadow: var(--shadow);
+  }
+  .enquiry-container h3 { margin: 0 0 8px 0; font-size: 1.25rem; }
+  .enquiry-container p { margin: 0 0 20px 0; font-size: 0.88rem; color: var(--ink-soft); }
+  .enquiry-form { display: flex; flex-direction: column; gap: 16px; max-width: 550px; }
+  .enquiry-form label { display: flex; flex-direction: column; gap: 6px; font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); }
+  .enquiry-form input, .enquiry-form textarea {
+    padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--ink); background: var(--bg); transition: border-color 0.15s ease;
+  }
+  .enquiry-form input:focus, .enquiry-form textarea:focus { outline: none; border-color: var(--brand); background: #fff; }
+  .enquiry-form textarea { resize: vertical; min-height: 90px; }
 
   /* why join */
   .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
@@ -279,6 +304,7 @@
         <p>Tap a card to open the full syllabus — modules, chapters, and every lab included.</p>
       </div>
     </div>
+    <!-- Handled fully via asynchronous local Markdown loading arrays -->
     <div class="courses-grid" id="course-grid"></div>
     <div id="detail"></div>
   </div>
@@ -347,34 +373,145 @@
 </footer>
 
 <script>
-/* ---------------- data ---------------- */
-const courses = [
-  {
-    id: 'fullstack', track:'Software', name:'Full-Stack Web Development',
-    duration:'12 Weeks', level:'Beginner → Advanced',
-    focus:'HTML5, CSS3, JavaScript, React, and Node.js.',
-    simple:true
-  },
-  {
-    id: 'datasci', track:'Software', name:'Python for Data Science',
-    duration:'8 Weeks', level:'Intermediate',
-    focus:'Pandas, NumPy, Scikit-Learn, and Data Visualization.',
-    simple:true
-  },
-  {
-    id: 'pentest', track:'Security · Red Team', name:'Penetration Testing & Ethical Hacking — AI Era',
-    duration:'24 Weeks (6 mo)', level:'Beginner → Advanced',
-    focus:'Networking and offensive fundamentals, layered with attacking AI/ML systems and using AI as a hacking co-pilot.',
-    simple:false, key:'pentest'
-  },
-  {
-    id: 'soc', track:'Security · Blue Team', name:'SOC Analyst Curriculum',
-    duration:'20 Weeks (5 mo)', level:'Beginner → Tier 2/3',
-    focus:'Monitoring, detection, and incident response — from alert triage to defending against AI-enabled attacks.',
-    simple:false, key:'soc'
-  }
+/* 
+  1. INPUT YOUR .MD SYLLABI FILES HERE
+  Drop markdown documents directly into the active directory folder and type paths below:
+*/
+const markdownCourseFiles = [
+  'Pentesting_Ethical_Hacking_AI_Era_Syllabus.md',
+  'SOC_Analyst_Curriculum.md',
+  'Full_Stack_Web_Dev.md',
+  'Python_Data_Science.md'
 ];
 
+/* 2. AUTOMATIC METADATA FILTER ENGINE */
+function parseMarkdownHeader(markdownText, filePath) {
+  const lines = markdownText.split('\n');
+  
+  let name = "Untitled Curricula";
+  let track = "Software Engineering";
+  let duration = "Self-Paced";
+  let level = "All Levels";
+  let focus = "Course documentation file details.";
+  let isSimple = true;
+  let syllabusKey = "";
+
+  const titleLine = lines.find(l => l.trim().startsWith('# '));
+  if (titleLine) {
+    name = titleLine.replace('# ', '').trim();
+  }
+
+  markdownText.replace(/\*\*Duration:\*\*\s*([^| \n\r]+[^|\n\r]*)/i, (m, val) => duration = val.trim());
+  markdownText.replace(/\*\*Level:\*\*\s*([^| \n\r]+[^|\n\r]*)/i, (m, val) => level = val.trim());
+  
+  const overviewIndex = lines.findIndex(l => l.toLowerCase().includes('program overview'));
+  if (overviewIndex !== -1 && lines[overviewIndex + 1]) {
+    focus = lines[overviewIndex + 1].trim() || lines[overviewIndex + 2].trim();
+  } else {
+    const paragraphLine = lines.find(l => l.trim().length > 30 && !l.startsWith('#') && !l.startsWith('-'));
+    if (paragraphLine) focus = paragraphLine.trim();
+  }
+
+  const lowerPath = filePath.toLowerCase();
+  if (lowerPath.includes('pentest') || lowerPath.includes('hacking')) {
+    track = "Security · Red Team";
+    isSimple = false;
+    syllabusKey = "pentest";
+  } else if (lowerPath.includes('soc') || lowerPath.includes('blue')) {
+    track = "Security · Blue Team";
+    isSimple = false;
+    syllabusKey = "soc";
+  } else if (lowerPath.includes('data') || lowerPath.includes('python')) {
+    track = "Software";
+  } else if (lowerPath.includes('web') || lowerPath.includes('stack') || lowerPath.includes('dev')) {
+    track = "Software";
+  }
+
+  return { name, track, duration, level, focus, simple: isSimple, key: syllabusKey, rawMarkdown: markdownText };
+}
+
+/* 3. PARSE ENGINE WORKFLOW INITIALIZATION */
+async function loadAllCourses() {
+  const grid = document.getElementById('course-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  
+  const loadedCourses = [];
+
+  for (const path of markdownCourseFiles) {
+    try {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error();
+      const rawText = await response.text();
+      const parsedData = parseMarkdownHeader(rawText, path);
+      loadedCourses.push(parsedData);
+    } catch (err) {
+      console.warn(`Dynamic file skipping handled at lookup path: [${path}]`, err);
+    }
+  }
+
+  loadedCourses.forEach((c) => {
+    const card = document.createElement('button');
+    card.className = 'course-card';
+    card.setAttribute('type', 'button');
+    card.innerHTML = `
+      <div class="track-tag">${c.track}</div>
+      <h3>${c.name}</h3>
+      <p class="focus">${c.focus.substring(0, 130)}${c.focus.length > 130 ? '...' : ''}</p>
+      <div class="meta"><span>${c.duration}</span><span>${c.level}</span></div>
+    `;
+    card.addEventListener('click', () => openCourse(c, card));
+    grid.appendChild(card);
+  });
+}
+
+function openCourse(c, cardElement){
+  document.querySelectorAll('.course-card').forEach(el => el.classList.remove('active'));
+  cardElement.classList.add('active');
+  
+  const detail = document.getElementById('detail');
+  
+  // Render structure based on metadata flags
+  if(c.simple){
+    detail.innerHTML = `
+      <div class="detail-head markdown-content">
+        ${marked.parse(c.rawMarkdown)}
+        ${renderFormspreeBox(c.name)}
+      </div>
+    `;
+  } else {
+    // If the structural schema matches full JSON setups (pentest/soc fallback states)
+    const data = syllabi[c.key];
+    detail.innerHTML = renderDetail(data) + renderFormspreeBox(c.name);
+  }
+  
+  detail.className = 'open';
+  detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* Formspree Inline Integration Handler Template */
+function renderFormspreeBox(courseName) {
+  return `
+    <div class="enquiry-container">
+      <h3>Enquire About This Course</h3>
+      <p>Have questions regarding scheduling options, prerequisites, or platform setup updates for ${courseName}? Send our admissions team a line directly below.</p>
+      <form action="https://formspree.io/f/meeyeyel" method="POST" class="enquiry-form">
+        <input type="hidden" name="course_context" value="${courseName}">
+        <label>
+          Your email:
+          <input type="email" name="email" required placeholder="you@example.com">
+        </label>
+        <label>
+          Your message:
+          <textarea name="message" required placeholder="Ask about timeline structures, labs, hardware parameters..."></textarea>
+        </label>
+        <button type="submit" class="btn" style="align-self: flex-start;">Send Inquiry</button>
+      </form>
+    </div>
+  `;
+}
+
+// Retain pre-coded structural schema matrix properties for fallback engines
 const syllabi = {
   pentest: {
     kicker:'Security · Red Team', name:'Penetration Testing & Ethical Hacking — AI Era Edition',
@@ -463,39 +600,6 @@ const syllabi = {
   }
 };
 
-/* ---------------- render: course cards ---------------- */
-const grid = document.getElementById('course-grid');
-courses.forEach(c=>{
-  const card = document.createElement('button');
-  card.className = 'course-card';
-  card.setAttribute('type','button');
-  card.dataset.id = c.id;
-  card.innerHTML = `
-    <div class="track-tag">${c.track}</div>
-    <h3>${c.name}</h3>
-    <p class="focus">${c.focus}</p>
-    <div class="meta"><span>${c.duration}</span><span>${c.level}</span></div>
-  `;
-  card.addEventListener('click', ()=> openCourse(c));
-  grid.appendChild(card);
-});
-
-function openCourse(c){
-  document.querySelectorAll('.course-card').forEach(el=>{
-    el.classList.toggle('active', el.dataset.id === c.id);
-  });
-  const detail = document.getElementById('detail');
-  if(c.simple){
-    detail.classList.remove('open');
-    detail.innerHTML = '';
-    return;
-  }
-  const data = syllabi[c.key];
-  detail.innerHTML = renderDetail(data);
-  detail.classList.add('open');
-  detail.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
 function renderDetail(d){
   const factsHtml = d.facts.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join('');
   const modulesHtml = d.modules.map((m,i)=>`
@@ -565,7 +669,10 @@ function typeLine(){
     setTimeout(typeLine, 1900);
   }, 500);
 }
+
+// Instantiate automated render pipeline execution directly
 typeLine();
+loadAllCourses();
 </script>
 </body>
 </html>
