@@ -3,418 +3,569 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TheSudoLab Academy — Pentesting & SOC Analyst Training</title>
+<title>TheSudoLab — Learn by Building</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0A0E16;
-    --surface: #121826;
-    --surface-2: #171F30;
-    --border: #262F45;
-    --text: #E9EDF3;
-    --text-dim: #8A94A8;
-    --amber: #FFB020;
-    --amber-dim: #7A5A1E;
-    --cyan: #38BDF8;
-    --red: #F0546B;
-    --green: #34D399;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Inter', sans-serif;
+    --bg: #F5F6F3;
+    --surface: #FFFFFF;
+    --surface-raised: #ECEFEA;
+    --ink: #131A1F;
+    --ink-soft: #57625C;
+    --ink-faint: #8A938C;
+    --line: #DAE0D8;
+    --brand: #1E5B4C;
+    --brand-dim: #E4EEE9;
+    --alert: #A83C2E;
+    --alert-dim: #F5E4E1;
+    --info: #2B5B7A;
+    --info-dim: #E4EDF2;
+    --warn: #B8863A;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(19,26,31,0.04), 0 8px 24px rgba(19,26,31,0.06);
   }
-
-  *{ box-sizing: border-box; margin:0; padding:0; }
-
-  html{ scroll-behavior: smooth; }
-
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    overflow-x: hidden;
-    position: relative;
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', -apple-system, sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.display{
+    font-family:'Space Grotesk', sans-serif;
+    letter-spacing:-0.01em;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  a{ color:inherit; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
   }
 
-  /* faint scanline / grid texture */
-  body::before{
-    content:"";
-    position: fixed;
-    inset:0;
-    pointer-events:none;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 42px 42px;
-    z-index: 0;
-    mask-image: radial-gradient(circle at 50% 20%, black, transparent 75%);
-  }
+  /* ---------- shell ---------- */
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 28px; }
 
-  a{ color:inherit; text-decoration:none; }
-  :focus-visible{ outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
-
-  .wrap{ max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
-
-  /* ---------- NAV ---------- */
-  header{ padding: 22px 32px; }
-  .nav-row{
-    max-width: 1280px; margin: 0 auto;
-    display:flex; align-items:center; justify-content:space-between; gap: 18px;
-    flex-wrap: wrap;
+  header.site{
+    position:sticky; top:0; z-index:50;
+    background:rgba(245,246,243,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
   }
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .brand-mark{
-    width: 42px; height:42px; border-radius: 12px;
-    background: linear-gradient(155deg, var(--amber), #C97A0E);
-    display:flex; align-items:center; justify-content:center;
-    font-family: var(--mono); font-weight:800; color:#181008; font-size:18px;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 8px 20px rgba(255,176,32,0.18);
-  }
-  .brand-text{ line-height: 1.05; }
-  .brand-text .name{ font-family: var(--mono); font-weight:700; font-size: 17px; letter-spacing: -0.2px; }
-  .brand-text .tag{ font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; font-family: var(--mono); }
-
-  .pillnav{
-    display:flex; align-items:center; gap: 4px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 6px; border-radius: 999px;
-  }
-  .pillnav a{
-    font-family: var(--mono);
-    font-size: 13.5px;
-    padding: 10px 18px;
-    border-radius: 999px;
-    color: var(--text-dim);
-    transition: all .18s ease;
-    white-space: nowrap;
-  }
-  .pillnav a:hover{ color: var(--text); }
-  .pillnav a.active{
-    background: var(--text);
-    color: #0A0E16;
-    font-weight: 700;
-  }
-
-  .contact-pill{
-    display:flex; align-items:center; gap: 12px;
-    background: var(--amber);
-    color: #1A1204;
-    padding: 10px 10px 10px 20px;
-    border-radius: 999px;
-    font-family: var(--mono);
-    font-weight: 700;
-  }
-  .contact-pill .sub{ font-size: 10px; font-weight: 500; opacity: .75; display:block; letter-spacing: .5px;}
-  .contact-pill .arrow{
-    width: 34px; height:34px; border-radius: 50%;
-    background: #1A1204; color: var(--amber);
-    display:flex; align-items:center; justify-content:center;
-    font-size: 16px;
-  }
-
-  @media (max-width: 980px){
-    .pillnav{ order: 3; width: 100%; justify-content: center; flex-wrap: wrap; }
-    .nav-row{ justify-content: center; }
-  }
-
-  /* ---------- BADGES ---------- */
-  .badges{ display:flex; flex-direction:column; align-items:center; gap:14px; margin: 28px 0 40px; }
-  .badge{
-    font-family: var(--mono); font-size: 13px;
-    padding: 9px 20px; border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--cyan);
-    display:flex; align-items:center; gap:8px;
-  }
-  .badge .dot{ width:7px; height:7px; border-radius:50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .badge b{ color: var(--text); }
-  .badge-new{
-    background: linear-gradient(90deg, rgba(255,176,32,0.16), rgba(56,189,248,0.16));
-    border: 1px solid rgba(255,176,32,0.35);
-    color: var(--text);
-    font-weight: 600;
-  }
-
-  /* ---------- HERO ---------- */
-  .hero{ position: relative; padding-bottom: 90px; }
-  .hero-grid{
-    display:grid; grid-template-columns: 1fr; gap: 0;
-    position: relative;
-  }
-  h1{
-    font-family: var(--mono);
-    font-weight: 800;
-    text-align:center;
-    font-size: clamp(38px, 6vw, 78px);
-    line-height: 1.05;
-    letter-spacing: -1.5px;
-    margin: 0 auto 26px;
-    max-width: 980px;
-  }
-  h1 .accent{ color: var(--amber); }
-  h1 .glitch{ color: var(--cyan); }
-
-  .hero-sub{
-    text-align:center;
-    max-width: 680px;
-    margin: 0 auto 34px;
-    color: var(--text-dim);
-    font-size: 17px;
-    line-height: 1.65;
-  }
-
-  .cta-row{ display:flex; flex-direction:column; align-items:center; gap: 12px; }
-  .cta-btn{
-    font-family: var(--mono);
-    background: var(--text);
-    color: #0A0E16;
-    font-weight: 700;
-    padding: 16px 30px;
-    border-radius: 999px;
-    display:inline-flex; align-items:center; gap: 10px;
-    font-size: 15px;
-    transition: transform .15s ease;
-  }
-  .cta-btn:hover{ transform: translateY(-2px); }
-  .cta-note{ color: var(--text-dim); font-size: 13px; font-family: var(--mono); }
-
-  /* floating testimonial */
-  .float-card{
-    position: absolute;
-    left: 0;
-    top: 300px;
-    width: 300px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 22px 22px 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-  }
-  .stars{ color: var(--amber); letter-spacing: 3px; margin-bottom: 10px; font-size: 14px; }
-  .float-card p{ font-size: 13.5px; line-height: 1.7; color: var(--text); margin-bottom: 16px; }
-  .float-person{ display:flex; align-items:center; gap: 10px; }
-  .avatar{
-    width: 38px; height: 38px; border-radius: 50%;
-    background: linear-gradient(155deg, var(--cyan), #1C6E93);
-    display:flex; align-items:center; justify-content:center;
-    font-family: var(--mono); font-weight:700; font-size: 14px; color:#04121A;
-  }
-  .float-person .who{ font-weight: 700; font-size: 13.5px; }
-  .float-person .where{ font-size: 11.5px; color: var(--text-dim); font-family: var(--mono); }
-
-  /* terminal window */
-  .terminal{
-    position: absolute;
-    right: 0;
-    top: 260px;
-    width: 380px;
-    background: #0C1220;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.55);
-  }
-  .term-bar{
-    display:flex; align-items:center; gap:7px;
-    padding: 12px 14px;
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border);
-  }
-  .term-bar span{ width:10px; height:10px; border-radius:50%; }
-  .term-bar span:nth-child(1){ background: var(--red); }
-  .term-bar span:nth-child(2){ background: var(--amber); }
-  .term-bar span:nth-child(3){ background: var(--green); }
-  .term-title{ margin-left: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
-  .term-body{
-    font-family: var(--mono);
-    font-size: 12.5px;
-    line-height: 1.9;
-    padding: 18px;
-    min-height: 230px;
-    color: #C9D6E5;
-  }
-  .term-body .prompt{ color: var(--green); }
-  .term-body .warn{ color: var(--amber); }
-  .term-body .crit{ color: var(--red); }
-  .term-body .info{ color: var(--cyan); }
-  .term-body .ok{ color: var(--green); }
-  .cursor{ display:inline-block; width:7px; height:14px; background: var(--cyan); vertical-align: middle; animation: blink 1s steps(1) infinite; }
-  @keyframes blink{ 50%{ opacity: 0; } }
-
-  .social-rail{
-    position: absolute; right: -46px; top: 260px;
-    display:flex; flex-direction: column; gap: 10px;
-  }
-  .social-rail a{
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--surface); border: 1px solid var(--border);
-    display:flex; align-items:center; justify-content:center;
-    font-size: 15px; color: var(--text-dim);
-  }
-
-  @media (max-width: 1180px){
-    .float-card, .terminal, .social-rail{ position: static; width: 100%; margin: 22px auto; max-width: 380px; }
-    .social-rail{ flex-direction: row; justify-content:center; margin-top: 0; }
-  }
-
-  /* ---------- STATS ---------- */
-  .stats{
-    display:grid; grid-template-columns: repeat(4,1fr); gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    overflow: hidden;
-    margin: 60px 0;
-  }
-  .stat{ background: var(--surface); padding: 26px 20px; text-align:center; }
-  .stat .num{ font-family: var(--mono); font-size: 30px; font-weight: 800; color: var(--text); }
-  .stat .num span{ color: var(--amber); }
-  .stat .label{ font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
-  @media (max-width: 700px){ .stats{ grid-template-columns: 1fr 1fr; } }
-
-  /* ---------- SECTION HEADERS ---------- */
-  .eyebrow{
-    font-family: var(--mono); font-size: 12.5px; color: var(--amber);
-    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
-    display:flex; align-items:center; gap: 8px; justify-content:center;
-  }
-  .eyebrow::before{ content: "//"; color: var(--text-dim); }
-  .section-title{
-    font-family: var(--mono); font-weight: 800; text-align:center;
-    font-size: clamp(28px, 4vw, 42px); letter-spacing: -1px; margin-bottom: 14px;
-  }
-  .section-sub{ text-align:center; color: var(--text-dim); max-width: 620px; margin: 0 auto 50px; line-height: 1.6; }
-
-  section{ padding: 70px 0; position: relative; z-index:1; }
-
-  /* ---------- TRACKS ---------- */
-  .tracks{ display:grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  @media (max-width: 860px){ .tracks{ grid-template-columns: 1fr; } }
-  .track-card{
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 34px;
-    position: relative;
-    overflow: hidden;
-  }
-  .track-card.red::before{ content:""; position:absolute; inset:0; background: radial-gradient(circle at 100% 0%, rgba(240,84,107,0.09), transparent 55%); }
-  .track-card.blue::before{ content:""; position:absolute; inset:0; background: radial-gradient(circle at 100% 0%, rgba(56,189,248,0.09), transparent 55%); }
-  .track-tag{
-    font-family: var(--mono); font-size: 11.5px; padding: 5px 12px; border-radius: 999px;
-    display:inline-block; margin-bottom: 18px; letter-spacing: 1px;
-  }
-  .track-card.red .track-tag{ background: rgba(240,84,107,0.15); color: var(--red); }
-  .track-card.blue .track-tag{ background: rgba(56,189,248,0.15); color: var(--cyan); }
-  .track-card h3{ font-family: var(--mono); font-size: 24px; margin-bottom: 12px; letter-spacing: -0.5px; }
-  .track-card p{ color: var(--text-dim); font-size: 14.5px; line-height: 1.7; margin-bottom: 22px; }
-  .track-list{ list-style:none; margin-bottom: 26px; }
-  .track-list li{ font-size: 13.5px; color: var(--text); padding: 8px 0; border-bottom: 1px dashed var(--border); display:flex; gap:10px; }
-  .track-list li:last-child{ border-bottom:none; }
-  .track-card.red .track-list li::before{ content:"›"; color: var(--red); font-weight:700; }
-  .track-card.blue .track-list li::before{ content:"›"; color: var(--cyan); font-weight:700; }
-  .track-link{
-    font-family: var(--mono); font-size: 13.5px; font-weight: 700;
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:16px 0; }
+  .brand-mark{ display:flex; align-items:center; gap:10px; font-family:'Space Grotesk'; font-weight:700; font-size:1.15rem; }
+  .brand-mark .dot{ width:10px; height:10px; border-radius:2px; background:var(--brand); display:inline-block; }
+  .brand-mark .prompt{ color:var(--brand); font-family:'JetBrains Mono'; font-weight:500; }
+  nav.links{ display:flex; gap:28px; font-size:0.92rem; color:var(--ink-soft); }
+  nav.links a{ text-decoration:none; padding:6px 0; border-bottom:2px solid transparent; transition:border-color .15s ease, color .15s ease; }
+  nav.links a:hover{ color:var(--ink); border-color:var(--brand); }
+  .btn{
     display:inline-flex; align-items:center; gap:8px;
-    padding: 12px 22px; border-radius: 999px;
+    background:var(--ink); color:#fff; font-family:'Space Grotesk'; font-weight:600;
+    padding:10px 18px; border-radius:9px; text-decoration:none; font-size:0.9rem;
+    border:1px solid var(--ink); cursor:pointer; transition:transform .12s ease, background .15s ease;
   }
-  .track-card.red .track-link{ background: var(--red); color:#25060B; }
-  .track-card.blue .track-link{ background: var(--cyan); color:#03222E; }
+  .btn:hover{ background:var(--brand); border-color:var(--brand); transform:translateY(-1px); }
+  .btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+  .btn.ghost:hover{ background:var(--surface-raised); transform:none; }
 
-  /* ---------- CURRICULUM PHASES ---------- */
-  .phase-line{ position: relative; max-width: 820px; margin: 0 auto; }
-  .phase{
-    display:grid; grid-template-columns: 90px 1fr; gap: 24px;
-    padding: 26px 0; border-bottom: 1px solid var(--border);
+  /* ---------- hero ---------- */
+  .hero{ padding:76px 0 48px; }
+  .hero-grid{ display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center; }
+  .eyebrow{
+    font-family:'JetBrains Mono'; font-size:0.78rem; color:var(--brand); letter-spacing:0.06em;
+    text-transform:uppercase; display:inline-flex; align-items:center; gap:8px; margin-bottom:18px;
   }
-  .phase:last-child{ border-bottom:none; }
-  .phase-num{ font-family: var(--mono); font-size: 34px; font-weight: 800; color: var(--surface-2); -webkit-text-stroke: 1px var(--border); }
-  .phase h4{ font-family: var(--mono); font-size: 17px; margin-bottom: 8px; }
-  .phase p{ color: var(--text-dim); font-size: 14px; line-height: 1.65; }
-  .phase .tools{ margin-top: 10px; display:flex; flex-wrap:wrap; gap: 8px; }
-  .tools span{ font-family: var(--mono); font-size: 11px; color: var(--text-dim); border:1px solid var(--border); padding: 4px 10px; border-radius: 999px; }
+  .eyebrow::before{ content:''; width:18px; height:1px; background:var(--brand); display:inline-block; }
+  .hero h1{ font-size:2.85rem; font-weight:700; line-height:1.06; margin:0 0 20px; }
+  .hero h1 em{ font-style:normal; color:var(--brand); }
+  .hero p.lede{ font-size:1.08rem; color:var(--ink-soft); max-width:46ch; margin:0 0 30px; }
+  .hero .cta-row{ display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+  .hero .microcopy{ font-size:0.82rem; color:var(--ink-faint); margin-top:14px; }
 
-  /* ---------- REVIEWS ---------- */
-  .reviews-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-  @media (max-width: 900px){ .reviews-grid{ grid-template-columns: 1fr; } }
-  .review-card{ background: var(--surface); border:1px solid var(--border); border-radius: 18px; padding: 26px; }
-  .review-card p{ font-size: 13.5px; color: var(--text); line-height: 1.7; margin: 12px 0 18px; }
-
-  /* ---------- FOOTER CTA ---------- */
-  .footer-cta{
-    text-align:center; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 24px;
-    padding: 60px 30px; margin-bottom: 60px;
+  /* terminal signature element */
+  .terminal{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    box-shadow:var(--shadow); overflow:hidden;
   }
-  footer{ text-align:center; padding: 30px 0 50px; color: var(--text-dim); font-size: 12.5px; font-family: var(--mono); }
-  footer a{ color: var(--cyan); }
+  .terminal .bar{
+    display:flex; align-items:center; gap:8px; padding:11px 14px;
+    border-bottom:1px solid var(--line); background:var(--surface-raised);
+  }
+  .terminal .bar span{ width:9px; height:9px; border-radius:50%; background:#D3D8D0; }
+  .terminal .bar .tag{ margin-left:auto; font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--ink-faint); }
+  .terminal .body{ padding:22px 20px 26px; font-family:'JetBrains Mono'; font-size:0.87rem; min-height:210px; }
+  .terminal .line{ display:flex; gap:10px; margin-bottom:13px; opacity:0; animation:reveal .4s ease forwards; }
+  .terminal .line .prompt-sym{ color:var(--brand); flex-shrink:0; }
+  .terminal .line .out{ color:var(--ink-soft); }
+  .terminal .line .cmd{ color:var(--ink); }
+  .terminal .caret{ display:inline-block; width:7px; height:15px; background:var(--brand); margin-left:2px; vertical-align:-2px; animation:blink 1s step-end infinite; }
+  @keyframes reveal{ to{ opacity:1; } }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .stat-strip{ display:flex; gap:0; margin-top:22px; border-top:1px solid var(--line); }
+  .stat{ flex:1; padding:16px 18px 0; }
+  .stat + .stat{ border-left:1px solid var(--line); }
+  .stat b{ display:block; font-family:'Space Grotesk'; font-size:1.3rem; }
+  .stat span{ font-size:0.76rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; }
+
+  section{ padding:56px 0; }
+  .section-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:32px; }
+  .section-head h2{ font-size:1.75rem; margin:0; }
+  .section-head p{ color:var(--ink-soft); margin:6px 0 0; max-width:56ch; }
+
+  /* ---------- course cards ---------- */
+  .courses-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .course-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 20px; cursor:pointer; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    display:flex; flex-direction:column; text-align:left;
+  }
+  .course-card:hover{ border-color:var(--brand); transform:translateY(-3px); box-shadow:var(--shadow); }
+  .course-card.active{ border-color:var(--brand); background:var(--brand-dim); box-shadow:var(--shadow); }
+  .course-card .track-tag{ font-family:'JetBrains Mono'; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--brand); margin-bottom:10px; }
+  .course-card h3{ font-size:1.02rem; margin:0 0 8px; line-height:1.25; }
+  .course-card p.focus{ font-size:0.83rem; color:var(--ink-soft); margin:0 0 14px; flex-grow:1; }
+  .course-card .meta{ display:flex; gap:10px; font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--ink-faint); }
+  .course-card .meta span{ background:var(--surface-raised); padding:3px 8px; border-radius:5px; }
+
+  /* ---------- detail panel ---------- */
+  #detail{ display:none; }
+  #detail.open{ display:block; }
+  .detail-head{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 30px 26px; margin-bottom:28px; box-shadow:var(--shadow);
+  }
+  .detail-head .kicker{ font-family:'JetBrains Mono'; font-size:0.75rem; color:var(--brand); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
+  .detail-head h2{ font-size:1.7rem; margin:0 0 10px; }
+  .detail-head p{ color:var(--ink-soft); max-width:70ch; margin:0 0 16px; }
+  .detail-facts{ display:flex; gap:26px; flex-wrap:wrap; }
+  .detail-facts div{ font-size:0.83rem; }
+  .detail-facts b{ display:block; font-family:'Space Grotesk'; font-size:1rem; }
+  .detail-facts span{ color:var(--ink-faint); font-size:0.74rem; text-transform:uppercase; letter-spacing:0.04em; }
+
+  /* module timeline */
+  .timeline{ display:grid; grid-template-columns:74px 1fr; gap:0; }
+  .module{ display:contents; }
+  .rail{ position:relative; display:flex; flex-direction:column; align-items:center; }
+  .rail .num{
+    font-family:'JetBrains Mono'; font-weight:600; font-size:0.78rem; color:var(--brand);
+    background:var(--brand-dim); border:1px solid var(--brand); width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:4px;
+  }
+  .rail .thread{ flex:1; width:1px; background:var(--line); margin:4px 0; }
+  .module:last-child .rail .thread{ display:none; }
+  .module-body{ padding:0 0 40px 22px; }
+  .module-body .weeks{ font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
+  .module-body h3{ font-size:1.22rem; margin:0 0 14px; }
+
+  .chapter{ background:var(--surface); border:1px solid var(--line); border-radius:11px; margin-bottom:10px; overflow:hidden; }
+  .chapter summary{
+    list-style:none; cursor:pointer; padding:14px 18px; display:flex; align-items:center; gap:12px;
+    font-family:'Space Grotesk'; font-weight:600; font-size:0.95rem;
+  }
+  .chapter summary::-webkit-details-marker{ display:none; }
+  .chapter summary .chev{ margin-left:auto; color:var(--ink-faint); font-size:0.8rem; transition:transform .15s ease; }
+  .chapter[open] summary .chev{ transform:rotate(90deg); }
+  .chapter summary:hover{ background:var(--surface-raised); }
+  .chapter .content{ padding:0 18px 18px 18px; }
+  .chapter ul{ margin:0 0 12px; padding-left:18px; color:var(--ink-soft); font-size:0.89rem; }
+  .chapter ul li{ margin-bottom:5px; }
+  .chapter .ai-note{
+    background:var(--info-dim); border-left:3px solid var(--info); padding:9px 12px; border-radius:0 8px 8px 0;
+    font-size:0.85rem; color:#213E4E; margin-bottom:12px;
+  }
+  .chapter .ai-note b{ color:var(--info); font-family:'JetBrains Mono'; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.03em; }
+  .lab-tag{
+    display:inline-flex; align-items:center; gap:7px; background:var(--alert-dim); color:var(--alert);
+    font-family:'JetBrains Mono'; font-size:0.76rem; padding:7px 11px; border-radius:8px; font-weight:500;
+  }
+  .lab-tag::before{ content:'▸'; }
+
+  .stack-box, .assess-box{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px 24px; margin-bottom:14px;
+  }
+  .stack-box h4, .assess-box h4{ margin:0 0 10px; font-size:0.95rem; }
+  .stack-box p{ font-size:0.87rem; color:var(--ink-soft); margin:0; }
+  .assess-row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .assess-item{ flex:1; min-width:140px; background:var(--surface-raised); border-radius:9px; padding:12px 14px; }
+  .assess-item b{ font-family:'Space Grotesk'; font-size:1.15rem; display:block; }
+  .assess-item span{ font-size:0.76rem; color:var(--ink-faint); }
+
+  /* why join */
+  .why-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .why-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+  .why-card .mark{ font-family:'JetBrains Mono'; color:var(--brand); font-size:0.78rem; margin-bottom:10px; }
+  .why-card h4{ margin:0 0 8px; font-size:1.05rem; }
+  .why-card p{ margin:0; color:var(--ink-soft); font-size:0.9rem; }
+
+  /* study path */
+  .path{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:30px; }
+  .path .shared{ text-align:center; margin-bottom:22px; }
+  .path .shared .pill{
+    display:inline-block; background:var(--brand-dim); color:var(--brand); font-family:'JetBrains Mono';
+    font-size:0.78rem; padding:8px 16px; border-radius:20px; border:1px solid var(--brand);
+  }
+  .path .branches{ display:grid; grid-template-columns:1fr 1fr; gap:22px; position:relative; }
+  .path .branches::before{
+    content:''; position:absolute; top:-22px; left:50%; width:1px; height:22px; background:var(--line);
+  }
+  .branch{ border:1px solid var(--line); border-radius:11px; padding:18px 20px; }
+  .branch.blue{ border-top:3px solid var(--info); }
+  .branch.red{ border-top:3px solid var(--alert); }
+  .branch h4{ margin:0 0 6px; font-size:1rem; }
+  .branch p{ margin:0; font-size:0.87rem; color:var(--ink-soft); }
+
+  footer{ border-top:1px solid var(--line); padding:44px 0 60px; margin-top:20px; }
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .foot-row .brand-mark{ font-size:1rem; }
+  footer p{ color:var(--ink-faint); font-size:0.82rem; margin:0; }
+
+  @media (max-width: 880px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .courses-grid{ grid-template-columns:repeat(2,1fr); }
+    .why-grid{ grid-template-columns:1fr; }
+    .path .branches{ grid-template-columns:1fr; }
+    nav.links{ display:none; }
+    .hero h1{ font-size:2.1rem; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="nav-row">
-    <div class="brand" id="brandBox"></div>
-    <nav class="pillnav" id="navBox"></nav>
-    <div id="contactBox"></div>
+<header class="site">
+  <div class="wrap nav">
+    <div class="brand-mark"><span class="dot"></span>TheSudoLab<span class="prompt">_</span></div>
+    <nav class="links">
+      <a href="#courses">Courses</a>
+      <a href="#why">Why us</a>
+      <a href="#path">Study path</a>
+    </nav>
+    <a href="#enroll" class="btn">Enroll now</a>
   </div>
 </header>
 
-<main class="wrap hero">
-  <div class="badges" id="badgesBox"></div>
-
-  <div class="hero-grid">
-    <div id="heroBox"></div>
-
-    <div class="float-card" id="testimonialBox"></div>
-
-    <div class="terminal">
-      <div class="term-bar">
-        <span></span><span></span><span></span>
-        <span class="term-title" id="termTitle">// RED TEAM SESSION</span>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Project-based, expert-led</div>
+      <h1>Learn by running the <em>real</em> commands.</h1>
+      <p class="lede">From your first React component to your first Domain Admin escalation — every course here is built around hands-on labs, not slides. Pick a track and start building a portfolio.</p>
+      <div class="cta-row">
+        <a href="#courses" class="btn">Browse courses</a>
+        <a href="#why" class="btn ghost">Why TheSudoLab</a>
       </div>
-      <div class="term-body" id="termBody"></div>
+      <div class="stat-strip">
+        <div class="stat"><b>4</b><span>Course tracks</span></div>
+        <div class="stat"><b>24</b><span>Max weeks</span></div>
+        <div class="stat"><b>100%</b><span>Lab-driven</span></div>
+      </div>
     </div>
-
-    <div class="social-rail" id="socialBox"></div>
-  </div>
-
-  <div class="stats" id="statsBox"></div>
-</main>
-
-<section id="tracks">
-  <div class="wrap">
-    <div id="tracksHead"></div>
-    <div class="tracks" id="tracksBox"></div>
+    <div class="terminal">
+      <div class="bar"><span></span><span></span><span></span><div class="tag">lab@thesudolab</div></div>
+      <div class="body" id="term-body"></div>
+    </div>
   </div>
 </section>
 
-<section id="curriculum">
+<section id="courses">
   <div class="wrap">
-    <div id="curriculumHead"></div>
-    <div class="phase-line" id="curriculumBox"></div>
+    <div class="section-head">
+      <div>
+        <h2>Our current courses</h2>
+        <p>Tap a card to open the full syllabus — modules, chapters, and every lab included.</p>
+      </div>
+    </div>
+    <div class="courses-grid" id="course-grid"></div>
+    <div id="detail"></div>
   </div>
 </section>
 
-<section id="reviews">
+<section id="why">
   <div class="wrap">
-    <div id="reviewsHead"></div>
-    <div class="reviews-grid" id="reviewsBox"></div>
+    <div class="section-head">
+      <div>
+        <h2>Why join us</h2>
+        <p>Three things every cohort gets, regardless of track.</p>
+      </div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="mark">01 · build</div>
+        <h4>Hands-on projects</h4>
+        <p>You build a portfolio while you learn — every module ends in a lab, not a quiz.</p>
+      </div>
+      <div class="why-card">
+        <div class="mark">02 · feedback</div>
+        <h4>Professional mentorship</h4>
+        <p>Direct feedback from industry experts on your code, your scans, and your reports.</p>
+      </div>
+      <div class="why-card">
+        <div class="mark">03 · pace</div>
+        <h4>Flexible learning</h4>
+        <p>Access all materials at your own pace, and revisit any lab as many times as you need.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<section>
+<section id="path">
   <div class="wrap">
-    <div class="footer-cta" id="footerCtaBox"></div>
+    <div class="section-head">
+      <div>
+        <h2>Pursuing both security tracks?</h2>
+        <p>Pentesting and SOC Analyst share a foundation — here's the recommended sequence.</p>
+      </div>
+    </div>
+    <div class="path">
+      <div class="shared"><span class="pill">SOC Analyst · Modules 1–3 (shared foundation)</span></div>
+      <div class="branches">
+        <div class="branch blue">
+          <h4>Blue Team path</h4>
+          <p>Continue straight through SOC Analyst Modules 4–6: incident response, AI-in-the-SOC, capstone shift simulation.</p>
+        </div>
+        <div class="branch red">
+          <h4>Red Team path</h4>
+          <p>Branch into Pentesting Modules 2–6: recon, web app security, infrastructure exploitation, offensive AI, capstone engagement.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer id="footerBox"></footer>
+<footer id="enroll">
+  <div class="wrap foot-row">
+    <div class="brand-mark"><span class="dot"></span>TheSudoLab<span class="prompt">_</span></div>
+    <a href="#" class="btn">Enroll in our next cohort →</a>
+  </div>
+  <div class="wrap" style="margin-top:18px;">
+    <p>Expert-led, project-based learning for aspiring software engineers and security practitioners.</p>
+  </div>
+</footer>
 
-<script src="content.js"></script>
-<script src="app.js"></script>
+<script>
+/* ---------------- data ---------------- */
+const courses = [
+  {
+    id: 'fullstack', track:'Software', name:'Full-Stack Web Development',
+    duration:'12 Weeks', level:'Beginner → Advanced',
+    focus:'HTML5, CSS3, JavaScript, React, and Node.js.',
+    simple:true
+  },
+  {
+    id: 'datasci', track:'Software', name:'Python for Data Science',
+    duration:'8 Weeks', level:'Intermediate',
+    focus:'Pandas, NumPy, Scikit-Learn, and Data Visualization.',
+    simple:true
+  },
+  {
+    id: 'pentest', track:'Security · Red Team', name:'Penetration Testing & Ethical Hacking — AI Era',
+    duration:'24 Weeks (6 mo)', level:'Beginner → Advanced',
+    focus:'Networking and offensive fundamentals, layered with attacking AI/ML systems and using AI as a hacking co-pilot.',
+    simple:false, key:'pentest'
+  },
+  {
+    id: 'soc', track:'Security · Blue Team', name:'SOC Analyst Curriculum',
+    duration:'20 Weeks (5 mo)', level:'Beginner → Tier 2/3',
+    focus:'Monitoring, detection, and incident response — from alert triage to defending against AI-enabled attacks.',
+    simple:false, key:'soc'
+  }
+];
 
+const syllabi = {
+  pentest: {
+    kicker:'Security · Red Team', name:'Penetration Testing & Ethical Hacking — AI Era Edition',
+    blurb:'Builds a penetration tester from the ground up — networking, systems, and classic offensive security — then layers in AI-era skills: attacking AI/ML systems, using AI as a co-pilot, defeating AI-based defenses, and the regulations shaping this space.',
+    facts:[['24','Weeks'],['6','Modules'],['Beginner → Advanced','Level'],['Theory + Labs + Capstone','Format']],
+    modules:[
+      { title:'Foundations', weeks:'Weeks 1–4', chapters:[
+        { t:'Networking Fundamentals', pts:['OSI & TCP/IP models, encapsulation','IP addressing, subnetting, CIDR','TCP vs UDP, three-way handshake','DNS, DHCP, ARP, NAT','Common ports & protocols (HTTP/S, FTP, SSH, SMB, RDP, SMTP)','Packet analysis with Wireshark'], lab:'Capture and analyze live traffic; identify a simulated port scan in a pcap file' },
+        { t:'Operating Systems for Security', pts:['Linux fundamentals: filesystem, permissions, processes, package management','Windows fundamentals: registry, services, Active Directory basics, PowerShell','Bash & PowerShell scripting for automation','Virtualization (VMware/VirtualBox) and building a home lab'], lab:'Build a lab with Kali Linux, a Windows 10/Server VM, and a vulnerable VM (Metasploitable)' },
+        { t:'Security Concepts & Terminology', pts:['CIA triad, risk, threat, vulnerability, exploit','Types of hackers, threat actors, APTs','Cyber Kill Chain & MITRE ATT&CK framework overview','Laws, ethics, and Rules of Engagement (RoE)','Types of pentests: black/grey/white box, red team vs pentest vs vuln assessment'], lab:'Map a sample attack scenario to MITRE ATT&CK tactics/techniques' },
+        { t:'Setting Up the Attack Environment', pts:['Kali Linux / Parrot OS deep dive','Essential tools overview: Nmap, Burp Suite, Metasploit, Wireshark','Command-line proficiency drills','Introduction to Python for security scripting'], lab:'Write a Python script to automate a basic port sweep' },
+      ]},
+      { title:'Reconnaissance & Scanning', weeks:'Weeks 5–7', chapters:[
+        { t:'Passive Reconnaissance (OSINT)', pts:['OSINT methodology and frameworks','Google dorking, Shodan, Censys','WHOIS, DNS enumeration, subdomain discovery (Sublist3r, Amass)','Social media & metadata harvesting'], ai:'Using LLMs to summarize OSINT data, generate target profiles, and draft phishing pretext narratives (authorized engagements only)', lab:'Build a full OSINT profile of a test target using only public sources' },
+        { t:'Active Scanning & Enumeration', pts:['Nmap deep dive (scan types, timing, scripts/NSE)','Service and version detection','SMB, SNMP, LDAP, NFS enumeration','Web technology fingerprinting (Wappalyzer, WhatWeb)','Vulnerability scanners: Nessus, OpenVAS, Nikto'], lab:'Full enumeration of a multi-service target network' },
+        { t:'Using AI to Accelerate Recon', pts:['AI-assisted tool output triage (summarizing scan results at scale)','Prompting LLMs for attack surface mapping','Automating recon pipelines with AI + scripting (agentic recon workflows)','Risks: hallucinated findings, data leakage to third-party AI tools'], lab:'Build an AI-assisted recon pipeline that ingests Nmap/Nikto output and produces a prioritized target list' },
+      ]},
+      { title:'Web Application Security', weeks:'Weeks 8–11', chapters:[
+        { t:'Web Fundamentals for Hackers', pts:['HTTP/S deep dive, cookies, sessions, headers','Web app architecture, APIs (REST/GraphQL)','Burp Suite mastery: proxy, repeater, intruder, extensions'], lab:'Intercept and modify requests using Burp Suite' },
+        { t:'OWASP Top 10 (2021/2025)', pts:['Broken Access Control · Cryptographic Failures · Injection (SQLi, NoSQLi, command injection)','Insecure Design · Security Misconfiguration · Vulnerable & Outdated Components','Identification & Authentication Failures · Software & Data Integrity Failures','Security Logging & Monitoring Failures · SSRF'], lab:'Exploit each category in DVWA / OWASP Juice Shop / PortSwigger Web Security Academy labs' },
+        { t:'Advanced Web Exploitation', pts:['XSS (reflected, stored, DOM-based) and payload crafting','SQL injection (manual + sqlmap automation)','SSRF, XXE, insecure deserialization','Authentication & session attacks (JWT abuse, OAuth flaws)','API security testing'], lab:'Full black-box assessment of a vulnerable web app with a written report' },
+        { t:'Attacking AI-Powered Web Applications', pts:['Prompt injection (direct & indirect) against LLM-integrated apps','Jailbreaking chatbots and guardrail bypass testing','Insecure output handling from LLM responses (leading to XSS/SSRF)','Data poisoning and training data exposure risks','Model extraction and API abuse against ML endpoints','Testing RAG pipelines for data leakage · OWASP Top 10 for LLM Applications'], lab:'Perform a prompt-injection assessment against a sandboxed chatbot app; document findings using LLM-specific risk taxonomy' },
+      ]},
+      { title:'Network & Infrastructure Exploitation', weeks:'Weeks 12–15', chapters:[
+        { t:'Exploitation Fundamentals', pts:['Vulnerability research basics, CVE/CVSS scoring','Metasploit Framework deep dive','Manual exploitation vs automated frameworks','Buffer overflow basics (stack-based, Windows/Linux target)'], lab:'Exploit a known CVE end-to-end using Metasploit; then manually replicate one exploit' },
+        { t:'Post-Exploitation & Privilege Escalation', pts:['Windows privilege escalation techniques (misconfig, tokens, services)','Linux privilege escalation (SUID, cron, kernel exploits)','Persistence mechanisms · Living-off-the-land binaries (LOLBins)'], lab:'Escalate privileges on both a Windows and Linux target using manual enumeration scripts (LinPEAS/WinPEAS)' },
+        { t:'Active Directory Attacks', pts:['AD architecture, Kerberos fundamentals','Enumeration with BloodHound','Kerberoasting, AS-REP roasting, pass-the-hash, pass-the-ticket','Golden/Silver ticket attacks · Lateral movement techniques'], lab:'Full AD attack path from initial foothold to Domain Admin in a lab environment' },
+        { t:'Wireless, IoT & Physical Security Basics', pts:['WPA2/WPA3 attacks, rogue AP, Evil Twin','Bluetooth and IoT device attack surface','Physical security & social engineering fundamentals'], lab:'Crack a WPA2 handshake in a controlled lab; set up a rogue AP' },
+      ]},
+      { title:'AI as an Offensive Security Tool', weeks:'Weeks 16–18', chapters:[
+        { t:'AI-Augmented Exploit Development', pts:['Using LLMs for code analysis and vulnerability triage','AI-assisted fuzzing and payload generation','Automated exploit-writing assistants — capabilities and current limitations','Verifying AI-generated exploit code for correctness and safety'], lab:'Use an AI coding assistant to analyze a sample vulnerable binary/source snippet and propose a proof-of-concept (verified manually)' },
+        { t:'Adversarial Machine Learning', pts:['Evasion attacks (adversarial examples against classifiers)','Model inversion & membership inference attacks','Data poisoning attacks on training pipelines','Attacking AI-based malware/spam/fraud detectors','Defense evaluation: adversarial robustness testing'], lab:'Craft an adversarial example that evades a simple image/text classifier in a sandbox' },
+        { t:'AI-Powered Social Engineering & Deepfakes', pts:['Voice cloning & deepfake video risks in phishing/vishing','AI-generated phishing content and detection evasion','Building organizational awareness/training programs against AI-enabled social engineering','Ethical and legal boundaries for simulated AI-based phishing campaigns'], lab:'Design (do not execute against real people) a simulated AI-phishing awareness exercise plan and detection criteria' },
+      ]},
+      { title:'Reporting, Certifications & Capstone', weeks:'Weeks 19–24', chapters:[
+        { t:'Professional Reporting & Communication', pts:['Structuring a pentest report (executive summary, technical findings, risk ratings, remediation)','CVSS scoring in reports','Communicating findings to technical vs executive audiences'], lab:'Write a full professional report for a completed lab engagement' },
+        { t:'Rules of Engagement, Legal & Compliance', pts:['Contracts, scope, RoE documents','Relevant laws (CFAA-type frameworks, regional equivalents) — general awareness, not a legal substitute','Data protection considerations when testing AI/ML systems','Responsible disclosure processes'], lab:'Draft a sample RoE and scope document for a mock engagement' },
+        { t:'Career Paths & Certifications', pts:['Certification roadmap: Security+/PenTest+, eJPT, OSCP, CEH, GPEN, CRTP (AD-focused)','Emerging certs for AI security','Building a portfolio: home lab writeups, CTF profiles (TryHackMe, HackTheBox), GitHub','Bug bounty fundamentals (HackerOne/Bugcrowd)'], lab:'Complete and document 3 CTF-style boxes; publish a writeup' },
+        { t:'Capstone Engagement Simulation', pts:['Full black-box pentest of a simulated corporate environment (network + web app + one AI-integrated component)','Includes recon, exploitation, privilege escalation, lateral movement, and one adversarial-AI test','Team or individual engagement with time-boxed constraints'], lab:'Deliverable: full professional pentest report + debrief presentation' },
+        { t:'Review, Mock Exam & Next Steps', pts:['Comprehensive review of all modules','Mock practical exam (OSCP-style scenario)','Personalized study plan for chosen certification path','Continuing education: OWASP GenAI Security Project, MITRE ATLAS'], lab:'' },
+      ]},
+    ],
+    stack:'Kali Linux, Nmap, Burp Suite (Community/Pro), Metasploit, Wireshark, BloodHound, sqlmap, Nikto, John the Ripper/Hashcat, LinPEAS/WinPEAS, OWASP Juice Shop, DVWA, PortSwigger Web Security Academy, TryHackMe, HackTheBox, a sandboxed LLM app for AI-security labs, MITRE ATLAS.',
+    assessment:[['40%','Weekly labs'],['20%','Module quizzes'],['30%','Capstone report & presentation'],['10%','Participation / CTF writeups']]
+  },
+  soc: {
+    kicker:'Security · Blue Team', name:'SOC Analyst Curriculum',
+    blurb:'Takes a learner from zero to job-ready SOC Analyst (Tier 1–2): monitoring, detection, incident response, threat intelligence, and the growing role of AI in both attacks and defensive tooling. Structured around real SOC workflows — alert triage → investigation → containment → reporting.',
+    facts:[['20','Weeks'],['6','Modules'],['Beginner → Tier 2/3','Level'],['Theory + Labs + Capstone','Format']],
+    modules:[
+      { title:'Foundations of Security Operations', weeks:'Weeks 1–3', chapters:[
+        { t:'Introduction to the SOC', pts:['What a SOC is, SOC tiers (Tier 1, 2, 3), roles & responsibilities','SOC models: in-house, MSSP, hybrid','Shift structures, escalation paths, SLAs','Key metrics: MTTD, MTTR, alert volume, false positive rate'], lab:'Map a sample SOC org chart and escalation workflow' },
+        { t:'Networking & Systems Refresher for Analysts', pts:['TCP/IP, common ports/protocols, packet structure','Windows and Linux logging basics (Event Viewer, syslog)','Active Directory basics for detection context','Cloud fundamentals (AWS/Azure basics, shared responsibility model)'], lab:'Read and interpret raw Windows Security Event Logs and Linux auth logs' },
+        { t:'Security Fundamentals & Frameworks', pts:['CIA triad, defense-in-depth','MITRE ATT&CK framework (tactics, techniques, procedures)','Cyber Kill Chain · NIST Cybersecurity Framework overview','Common threat actor types & motivations'], lab:'Map three sample incidents to MITRE ATT&CK techniques' },
+      ]},
+      { title:'Monitoring Tools & Log Analysis', weeks:'Weeks 4–7', chapters:[
+        { t:'SIEM Fundamentals', pts:['What a SIEM does: log collection, normalization, correlation','Overview of major platforms: Splunk, Microsoft Sentinel, IBM QRadar, Elastic','Log sources: firewalls, endpoints, servers, cloud, identity providers','Writing basic search queries (SPL/KQL fundamentals)'], lab:'Ingest sample logs into Splunk/Elastic and run basic searches' },
+        { t:'Detection Engineering Basics', pts:['Writing and tuning detection rules/correlation searches','Understanding false positives vs false negatives','Sigma rules — vendor-agnostic detection format','Alert prioritization and severity scoring'], lab:'Write a Sigma rule to detect a brute-force login pattern; deploy in a lab SIEM' },
+        { t:'Endpoint Detection & Response (EDR)', pts:['EDR concepts: telemetry, process trees, behavioral detection','Tools overview: CrowdStrike, Microsoft Defender for Endpoint, SentinelOne','Investigating endpoint alerts: process lineage, parent-child relationships'], lab:'Investigate a simulated malware execution alert in an EDR console/sandbox' },
+        { t:'Network Security Monitoring', pts:['IDS/IPS fundamentals (Snort, Suricata)','NetFlow analysis and traffic baselining','Packet analysis with Wireshark/Zeek','Detecting C2 (command and control) traffic patterns'], lab:'Analyze a pcap containing beaconing/C2 traffic; identify IOCs' },
+      ]},
+      { title:'Threat Intelligence & Alert Triage', weeks:'Weeks 8–10', chapters:[
+        { t:'Cyber Threat Intelligence (CTI) Fundamentals', pts:['Strategic, tactical, operational, technical intel','Indicators of Compromise (IOCs) vs Indicators of Attack (IOAs)','Threat intel feeds & platforms (MISP, OTX, commercial feeds)','Threat actor tracking, APT group profiles'], lab:'Enrich a set of IOCs using threat intel platforms and document findings' },
+        { t:'Alert Triage Methodology', pts:['Triage workflow: initial assessment → investigation → escalation/closure','Building an investigation checklist per alert type (phishing, malware, login anomaly)','Documentation standards and ticketing (ServiceNow, Jira)','Avoiding alert fatigue; prioritization frameworks'], lab:'Triage a queue of 10 simulated alerts, correctly escalate/close each with justification' },
+        { t:'Phishing & Email Security Analysis', pts:['Email header analysis (SPF/DKIM/DMARC)','Identifying phishing indicators (URLs, attachments, sender spoofing)','Sandboxing suspicious attachments/URLs'], ai:'Detecting LLM-crafted phishing emails and deepfake voice/video vishing attempts', lab:'Analyze 5 real-world-style phishing email samples, identify IOCs, and write an incident note' },
+      ]},
+      { title:'Incident Response', weeks:'Weeks 11–14', chapters:[
+        { t:'Incident Response Lifecycle', pts:['NIST IR lifecycle: Preparation, Detection & Analysis, Containment, Eradication, Recovery, Lessons Learned','Building/using an IR playbook','Roles during an incident (IR lead, comms, legal, technical)'], lab:'Walk through a tabletop exercise for a ransomware scenario' },
+        { t:'Malware Analysis Basics for SOC Analysts', pts:['Static vs dynamic analysis fundamentals','Using sandboxes (Any.Run, Cuckoo) for triage','Identifying malware families via IOC/behavior patterns'], ai:'Recognizing AI-generated/polymorphic malware behavioral patterns', lab:'Detonate a sample in a sandbox and write a triage summary (behavior, IOCs, verdict)' },
+        { t:'Digital Forensics Fundamentals', pts:['Chain of custody principles','Memory forensics basics (Volatility overview)','Disk imaging and artifact analysis basics','Timeline reconstruction'], lab:'Reconstruct a basic attack timeline from provided log/forensic artifacts' },
+        { t:'Containment, Eradication & Recovery', pts:['Isolating compromised hosts (network/EDR-based)','Credential resets, account lockdowns','Eradicating persistence mechanisms','Recovery validation and monitoring for reinfection'], lab:'Execute a full simulated containment workflow for a compromised endpoint' },
+      ]},
+      { title:'AI in the SOC — Defense & Emerging Threats', weeks:'Weeks 15–17', chapters:[
+        { t:'AI-Powered SOC Tools', pts:['AI/ML in SIEM correlation and anomaly detection (UEBA)','AI-assisted alert triage and auto-summarization (copilots in Sentinel/CrowdStrike/etc.)','Benefits and risks: over-reliance, hallucinated conclusions, alert context loss'], lab:'Use an AI-assisted SIEM copilot feature to triage a batch of alerts; validate its conclusions manually' },
+        { t:'Detecting AI-Enabled Attacks', pts:['Recognizing AI-generated phishing/social engineering at scale','Detecting prompt injection attempts against internal AI tools/chatbots','Deepfake indicators in video/voice-based fraud (CEO fraud, vishing)','Monitoring for abuse of internal LLM/AI copilot tools (data exfiltration via prompts)'], lab:'Build a detection checklist for AI-enabled social engineering attempts; apply it to sample cases' },
+        { t:'Securing AI Systems as SOC Assets', pts:['Monitoring AI/ML pipelines as part of the asset inventory','MITRE ATLAS framework overview (adversarial threats to AI systems)','Logging and alerting requirements for LLM-integrated applications','IR considerations specific to AI system compromise (model theft, poisoning)'], lab:"Draft a monitoring/logging plan for a company's internal LLM-powered customer service tool" },
+      ]},
+      { title:'Reporting, Career & Capstone', weeks:'Weeks 18–20', chapters:[
+        { t:'Reporting & Communication for SOC Analysts', pts:['Writing clear incident reports and shift handover notes','Communicating with stakeholders (technical vs executive)','Post-incident reviews and lessons-learned documentation'], lab:'Write a full incident report for a completed capstone scenario' },
+        { t:'Certifications & Career Path', pts:['Certification roadmap: Security+, CySA+, Splunk Core Certified, Microsoft SC-200, GCIH, BTL1','Building a SOC analyst portfolio (home SIEM lab, TryHackMe SOC path, LetsDefend)','Interview preparation: common SOC analyst technical questions'], lab:'Complete a full SOC simulation exercise on LetsDefend or similar platform' },
+        { t:'Capstone: Full SOC Shift Simulation', pts:['Simulated 4-hour SOC shift: live alert queue across phishing, malware, network anomaly, and an AI-enabled social engineering attempt','Full workflow: triage → investigation → containment → report → handover'], lab:'Deliverable: shift log, incident report, and executive summary presentation' },
+      ]},
+    ],
+    stack:'Splunk (Free/Enterprise trial), Microsoft Sentinel, Elastic Stack (ELK), Wireshark, Zeek, Suricata/Snort, TheHive + MISP, Any.Run/Cuckoo Sandbox, Volatility, CyberChef, LetsDefend, TryHackMe SOC Level 1/2 paths, MITRE ATT&CK Navigator, MITRE ATLAS.',
+    assessment:[['40%','Weekly labs'],['20%','Module quizzes'],['30%','Capstone shift simulation'],['10%','Portfolio / writeups']]
+  }
+};
+
+/* ---------------- render: course cards ---------------- */
+const grid = document.getElementById('course-grid');
+courses.forEach(c=>{
+  const card = document.createElement('button');
+  card.className = 'course-card';
+  card.setAttribute('type','button');
+  card.dataset.id = c.id;
+  card.innerHTML = `
+    <div class="track-tag">${c.track}</div>
+    <h3>${c.name}</h3>
+    <p class="focus">${c.focus}</p>
+    <div class="meta"><span>${c.duration}</span><span>${c.level}</span></div>
+  `;
+  card.addEventListener('click', ()=> openCourse(c));
+  grid.appendChild(card);
+});
+
+function openCourse(c){
+  document.querySelectorAll('.course-card').forEach(el=>{
+    el.classList.toggle('active', el.dataset.id === c.id);
+  });
+  const detail = document.getElementById('detail');
+  if(c.simple){
+    detail.classList.remove('open');
+    detail.innerHTML = '';
+    return;
+  }
+  const data = syllabi[c.key];
+  detail.innerHTML = renderDetail(data);
+  detail.classList.add('open');
+  detail.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function renderDetail(d){
+  const factsHtml = d.facts.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join('');
+  const modulesHtml = d.modules.map((m,i)=>`
+    <div class="module">
+      <div class="rail"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="thread"></div></div>
+      <div class="module-body">
+        <div class="weeks">${m.weeks}</div>
+        <h3>Module ${i+1} — ${m.title}</h3>
+        ${m.chapters.map(ch=>`
+          <details class="chapter">
+            <summary>${ch.t}<span class="chev">›</span></summary>
+            <div class="content">
+              <ul>${ch.pts.map(p=>`<li>${p}</li>`).join('')}</ul>
+              ${ch.ai ? `<div class="ai-note"><b>AI-era add-on</b><br>${ch.ai}</div>` : ''}
+              ${ch.lab ? `<span class="lab-tag">Lab: ${ch.lab}</span>` : ''}
+            </div>
+          </details>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  const assessHtml = d.assessment.map(a=>`<div class="assess-item"><b>${a[0]}</b><span>${a[1]}</span></div>`).join('');
+
+  return `
+    <div class="detail-head">
+      <div class="kicker">${d.kicker}</div>
+      <h2>${d.name}</h2>
+      <p>${d.blurb}</p>
+      <div class="detail-facts">${factsHtml}</div>
+    </div>
+    <div class="timeline">${modulesHtml}</div>
+    <div class="stack-box">
+      <h4>Recommended tools stack</h4>
+      <p>${d.stack}</p>
+    </div>
+    <div class="assess-box">
+      <h4>Assessment structure</h4>
+      <div class="assess-row">${assessHtml}</div>
+    </div>
+  `;
+}
+
+/* ---------------- signature terminal hero ---------------- */
+const termLines = [
+  { p:'~/lab$', c:'nmap -sV -T4 10.10.14.2', o:'22/tcp open ssh   80/tcp open http' },
+  { p:'~/lab$', c:'grep -i "failed password" auth.log', o:'14 matches — brute-force pattern flagged' },
+  { p:'~/lab$', c:'python3 -c "import pandas as pd"', o:'dataframe ready — 40,213 rows loaded' },
+  { p:'~/lab$', c:'sigma convert bruteforce.yml --target splunk', o:'rule deployed to lab SIEM ✓' },
+];
+const body = document.getElementById('term-body');
+let li = 0;
+function typeLine(){
+  if(li >= termLines.length){ li = 0; body.innerHTML=''; }
+  const row = termLines[li];
+  const div = document.createElement('div');
+  div.className = 'line';
+  div.style.animationDelay = '0.05s';
+  div.innerHTML = `<span class="prompt-sym">${row.p}</span><span class="cmd">${row.c}</span>`;
+  body.appendChild(div);
+  setTimeout(()=>{
+    const out = document.createElement('div');
+    out.className = 'line';
+    out.style.animationDelay = '0.05s';
+    out.innerHTML = `<span class="out" style="padding-left:64px;">${row.o}</span>`;
+    body.appendChild(out);
+    li++;
+    setTimeout(typeLine, 1900);
+  }, 500);
+}
+typeLine();
+</script>
 </body>
 </html>
